@@ -83,11 +83,16 @@ jobs:
           GITHUB_USER: dinhovikking17
           GITHUB_REPO: Poupalauncher
           RESELLER_ID: ${{ github.event.inputs.reseller_id }}
+          APP_NAME: ${{ github.event.inputs.app_name }}
         run: |
           set -e
+          SAFE_NAME=$(echo "$APP_NAME" | sed 's/[^A-Za-z0-9._-]\+/_/g')
+          if [ -z "$SAFE_NAME" ]; then SAFE_NAME="app"; fi
+          FINAL_APK="${SAFE_NAME}.apk"
+          cp app_final.apk "$FINAL_APK"
           TAG="rebrand-$RESELLER_ID"
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "$TAG" --notes "APK rebrand $RESELLER_ID"
-          gh release upload "$TAG" app_final.apk --clobber
+          gh release upload "$TAG" "$FINAL_APK" --clobber
 
       - name: Reportar link ao Worker
         env:
@@ -96,13 +101,17 @@ jobs:
           RESELLER_ID: ${{ github.event.inputs.reseller_id || 'ADMIN' }}
           GITHUB_USER: dinhovikking17
           GITHUB_REPO: Poupalauncher
+          APP_NAME: ${{ github.event.inputs.app_name }}
         run: |
-          LINK="https://github.com/${GITHUB_USER}/${GITHUB_REPO}/releases/download/rebrand-${RESELLER_ID}/app_final.apk"
+          SAFE_NAME=$(echo "$APP_NAME" | sed 's/[^A-Za-z0-9._-]\+/_/g')
+          if [ -z "$SAFE_NAME" ]; then SAFE_NAME="app"; fi
+          LINK="https://github.com/${GITHUB_USER}/${GITHUB_REPO}/releases/download/rebrand-${RESELLER_ID}/${SAFE_NAME}.apk"
           curl -s -X POST -H "X-Auth-Token: $REBRAND_TOKEN" -H "Content-Type: application/json" \
             -d "{\"reseller_id\":\"${RESELLER_ID}\",\"link\":\"${LINK}\"}" \
             "$WORKER_URL/?action=set_rebrand_link&reseller_id=$RESELLER_ID"
           curl -s -X POST -H "X-Auth-Token: $REBRAND_TOKEN" -H "Content-Type: application/json" \
             -d "{\"reseller_id\":\"${RESELLER_ID}\",\"status\":\"done\"}" \
             "$WORKER_URL/?action=set_rebrand_status&reseller_id=$RESELLER_ID"
+
 
 
