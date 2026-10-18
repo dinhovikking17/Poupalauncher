@@ -46,6 +46,7 @@ jobs:
           ASSETS=$(curl -s -H "X-Auth-Token: $REBRAND_TOKEN" "$WORKER_URL/?action=get_rebrand_assets&reseller_id=$RESELLER_ID")
           APP_NAME_REMOTE=$(echo "$ASSETS" | jq -r '.app_name // empty')
           LOGO_B64=$(echo "$ASSETS" | jq -r '.logo_b64 // empty')
+          WALLPAPER_B64=$(echo "$ASSETS" | jq -r '.wallpaper_b64 // empty')
           echo "DEBUG nome_remoto='${APP_NAME_REMOTE}' tamanho_logo=${#LOGO_B64}"
           if [ -n "$APP_NAME_REMOTE" ]; then APP_NAME="$APP_NAME_REMOTE"; fi
           sed -i "s|<string name=\"app_name\">[^<]*</string>|<string name=\"app_name\">${APP_NAME}</string>|" app_extraido/res/values/strings.xml
@@ -62,6 +63,11 @@ jobs:
             find app_extraido/res \( -name "ic_launcher*.png" -o -name "ic_launcher*.webp" \) | head -60
           else
             echo "DEBUG: LOGO_B64 VAZIO - assets nao encontrados no Worker"
+          fi
+          if [ -n "$WALLPAPER_B64" ]; then
+            echo "$WALLPAPER_B64" | base64 -d > wallpaper_custom
+            convert wallpaper_custom -resize 1200x896^ -gravity center -extent 1200x896 -quality 90 JPG:app_extraido/res/drawable/wallpaper_blue.jpg
+            echo "DEBUG: wallpaper_blue.jpg substituido"
           fi
 
       - name: Compilar, alinhar e assinar
@@ -98,3 +104,9 @@ jobs:
           curl -s -X POST -H "X-Auth-Token: $REBRAND_TOKEN" -H "Content-Type: application/json" \
             -d "{\"reseller_id\":\"${RESELLER_ID}\",\"status\":\"done\"}" \
             "$WORKER_URL/?action=set_rebrand_status&reseller_id=$RESELLER_ID"
+            
+            
+            
+            
+            
+
