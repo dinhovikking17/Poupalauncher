@@ -104,9 +104,3 @@ jobs:
           curl -s -X POST -H "X-Auth-Token: $REBRAND_TOKEN" -H "Content-Type: application/json" \
             -d "{\"reseller_id\":\"${RESELLER_ID}\",\"status\":\"done\"}" \
             "$WORKER_URL/?action=set_rebrand_status&reseller_id=$RESELLER_ID"
-            
-            
-            
-            
-            
-
