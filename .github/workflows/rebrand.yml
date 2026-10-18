@@ -93,10 +93,7 @@ jobs:
         env:
           WORKER_URL: https://worker-codigo.blindervpn.workers.dev
           REBRAND_TOKEN: ${{ secrets.REBRAND_TOKEN }}
-          "X-GitHub-Api-Version": "2022-11-28",
-        };
-        const repoRes = await fetch("https://api.github.com/repos/" + env.GITHUB_USER + "/" + env.GITHUB_REPO, { headers: ghHeaders });
-        RESELLER_ID: ${{ github.event.inputs.reseller_id || 'ADMIN' }}
+          RESELLER_ID: ${{ github.event.inputs.reseller_id || 'ADMIN' }}
           GITHUB_USER: dinhovikking17
           GITHUB_REPO: Poupalauncher
         run: |
@@ -107,9 +104,3 @@ jobs:
           curl -s -X POST -H "X-Auth-Token: $REBRAND_TOKEN" -H "Content-Type: application/json" \
             -d "{\"reseller_id\":\"${RESELLER_ID}\",\"status\":\"done\"}" \
             "$WORKER_URL/?action=set_rebrand_status&reseller_id=$RESELLER_ID"
-            
-            
-            
-            
-            
-
