@@ -47,7 +47,7 @@ jobs:
           APP_NAME_REMOTE=$(echo "$ASSETS" | jq -r '.app_name // empty')
           LOGO_B64=$(echo "$ASSETS" | jq -r '.logo_b64 // empty')
           WALLPAPER_B64=$(echo "$ASSETS" | jq -r '.wallpaper_b64 // empty')
-          echo "DEBUG nome_remoto='${APP_NAME_REMOTE}' tamanho_logo=${#LOGO_B64}"
+          echo "DEBUG nome_remoto='${APP_NAME_REMOTE}' tamanho_logo=${#LOGO_B64} tamanho_wallpaper=${#WALLPAPER_B64}"
           if [ -n "$APP_NAME_REMOTE" ]; then APP_NAME="$APP_NAME_REMOTE"; fi
           sed -i "s|<string name=\"app_name\">[^<]*</string>|<string name=\"app_name\">${APP_NAME}</string>|" app_extraido/res/values/strings.xml
           mkdir -p app_extraido/assets/assets
@@ -104,3 +104,5 @@ jobs:
           curl -s -X POST -H "X-Auth-Token: $REBRAND_TOKEN" -H "Content-Type: application/json" \
             -d "{\"reseller_id\":\"${RESELLER_ID}\",\"status\":\"done\"}" \
             "$WORKER_URL/?action=set_rebrand_status&reseller_id=$RESELLER_ID"
+
+
