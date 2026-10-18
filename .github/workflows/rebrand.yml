@@ -79,7 +79,7 @@ jobs:
           LINK="https://github.com/${GITHUB_USER}/${GITHUB_REPO}/releases/download/rebrand-${RESELLER_ID}/app_final.apk"
           curl -s -X POST -H "X-Auth-Token: $REBRAND_TOKEN" -H "Content-Type: application/json" \
             -d "{\"reseller_id\":\"${RESELLER_ID}\",\"link\":\"${LINK}\"}" \
-            "$WORKER_URL/?action=set_rebrand_link"
+            "$WORKER_URL/?action=set_rebrand_link&reseller_id=$RESELLER_ID"
           curl -s -X POST -H "X-Auth-Token: $REBRAND_TOKEN" -H "Content-Type: application/json" \
             -d "{\"reseller_id\":\"${RESELLER_ID}\",\"status\":\"done\"}" \
-            "$WORKER_URL/?action=set_rebrand_status"
+            "$WORKER_URL/?action=set_rebrand_status&reseller_id=$RESELLER_ID"
