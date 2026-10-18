@@ -81,7 +81,7 @@ jobs:
         env:
           WORKER_URL: https://worker-codigo.blindervpn.workers.dev
           REBRAND_TOKEN: ${{ secrets.REBRAND_TOKEN }}
-          RESELLER_ID: ${{ github.event.client_payload.reseller_id }}
+          RESELLER_ID: ${{ github.event.inputs.reseller_id || 'ADMIN' }}
           GITHUB_USER: dinhovikking17
           GITHUB_REPO: Poupalauncher
         run: |
