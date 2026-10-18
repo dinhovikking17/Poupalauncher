@@ -55,9 +55,11 @@ jobs:
           if [ -n "$LOGO_B64" ]; then
             echo "$LOGO_B64" | base64 -d > raw_logo
             convert raw_logo -resize 512x512 PNG32:nova_logo.png
+            convert raw_logo -resize 512x512 webp:nova_logo.webp 2>/dev/null || cp nova_logo.png nova_logo.webp
             find app_extraido/res -name "ic_launcher*.png" -exec cp nova_logo.png {} +
+            find app_extraido/res -name "ic_launcher*.webp" -exec cp nova_logo.webp {} +
             echo "DEBUG arquivos de icone substituidos:"
-            find app_extraido/res -name "ic_launcher*.png" | head -40
+            find app_extraido/res \( -name "ic_launcher*.png" -o -name "ic_launcher*.webp" \) | head -60
           else
             echo "DEBUG: LOGO_B64 VAZIO - assets nao encontrados no Worker"
           fi
