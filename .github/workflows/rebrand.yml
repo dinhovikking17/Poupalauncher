@@ -1,12 +1,21 @@
 name: Rebrand APK
 
 on:
-  repository_dispatch:
-    types: [rebrand_apk]
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: 'Nome do App'
+        required: true
+      reseller_id:
+        description: 'ID do Revendedor'
+        required: true
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -30,8 +39,8 @@ jobs:
         env:
           WORKER_URL: https://worker-codigo.blindervpn.workers.dev
           REBRAND_TOKEN: ${{ secrets.REBRAND_TOKEN }}
-          RESELLER_ID: ${{ github.event.client_payload.reseller_id }}
-          APP_NAME: ${{ github.event.client_payload.app_name }}
+          RESELLER_ID: ${{ github.event.inputs.reseller_id }}
+          APP_NAME: ${{ github.event.inputs.app_name }}
         run: |
           set -e
           ASSETS=$(curl -s -H "X-Auth-Token: $REBRAND_TOKEN" "$WORKER_URL/?action=get_rebrand_assets&reseller_id=$RESELLER_ID")
@@ -58,10 +67,10 @@ jobs:
 
       - name: Publicar no GitHub Releases
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_USER: dinhovikking17
           GITHUB_REPO: Poupalauncher
-          RESELLER_ID: ${{ github.event.client_payload.reseller_id }}
+          RESELLER_ID: ${{ github.event.inputs.reseller_id }}
         run: |
           set -e
           TAG="rebrand-$RESELLER_ID"
