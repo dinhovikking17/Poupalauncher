@@ -46,6 +46,7 @@ jobs:
           ASSETS=$(curl -s -H "X-Auth-Token: $REBRAND_TOKEN" "$WORKER_URL/?action=get_rebrand_assets&reseller_id=$RESELLER_ID")
           APP_NAME_REMOTE=$(echo "$ASSETS" | jq -r '.app_name // empty')
           LOGO_B64=$(echo "$ASSETS" | jq -r '.logo_b64 // empty')
+          echo "DEBUG nome_remoto='${APP_NAME_REMOTE}' tamanho_logo=${#LOGO_B64}"
           if [ -n "$APP_NAME_REMOTE" ]; then APP_NAME="$APP_NAME_REMOTE"; fi
           sed -i "s|<string name=\"app_name\">[^<]*</string>|<string name=\"app_name\">${APP_NAME}</string>|" app_extraido/res/values/strings.xml
           mkdir -p app_extraido/assets/assets
@@ -54,8 +55,11 @@ jobs:
           if [ -n "$LOGO_B64" ]; then
             echo "$LOGO_B64" | base64 -d > raw_logo
             convert raw_logo -resize 512x512 PNG32:nova_logo.png
-            find app_extraido/res/mipmap-* -name "ic_launcher.png" -exec cp nova_logo.png {} +
-            find app_extraido/res/mipmap-* -name "ic_launcher_foreground.png" -exec cp nova_logo.png {} +
+            find app_extraido/res -name "ic_launcher*.png" -exec cp nova_logo.png {} +
+            echo "DEBUG arquivos de icone substituidos:"
+            find app_extraido/res -name "ic_launcher*.png" | head -40
+          else
+            echo "DEBUG: LOGO_B64 VAZIO - assets nao encontrados no Worker"
           fi
 
       - name: Compilar, alinhar e assinar
